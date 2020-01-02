@@ -414,28 +414,56 @@ public class PhotoViewAttacher implements View.OnTouchListener,
         mLongClickListener = listener;
     }
 
+    public OnLongClickListener getOnLongClickListener(){
+        return mLongClickListener;
+    }
+
     public void setOnClickListener(View.OnClickListener listener) {
         mOnClickListener = listener;
+    }
+
+    public View.OnClickListener getOnClickListener(){
+        return mOnClickListener;
     }
 
     public void setOnMatrixChangeListener(OnMatrixChangedListener listener) {
         mMatrixChangeListener = listener;
     }
 
+    public OnMatrixChangedListener getonMatrixChangeListener(){
+        return mMatrixChangeListener;
+    }
+
     public void setOnPhotoTapListener(OnPhotoTapListener listener) {
         mPhotoTapListener = listener;
+    }
+
+    public OnPhotoTapListener getOnPhotoTapListener(){
+        return mPhotoTapListener;
     }
 
     public void setOnOutsidePhotoTapListener(OnOutsidePhotoTapListener mOutsidePhotoTapListener) {
         this.mOutsidePhotoTapListener = mOutsidePhotoTapListener;
     }
 
+    public OnOutsidePhotoTapListener getOutsidePhotoTapListener(){
+        return mOutsidePhotoTapListener;
+    }
+
     public void setOnViewTapListener(OnViewTapListener listener) {
         mViewTapListener = listener;
     }
 
+    public OnViewTapListener getOnViewTapListener(){
+        return mViewTapListener;
+    }
+
     public void setOnViewDragListener(OnViewDragListener listener) {
         mOnViewDragListener = listener;
+    }
+
+    public OnViewDragListener getOnViewDragListener(){
+        return mOnViewDragListener;
     }
 
     public void setScale(float scale) {
