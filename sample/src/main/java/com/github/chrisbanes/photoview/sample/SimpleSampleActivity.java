@@ -27,6 +27,10 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
+import androidx.core.content.ContextCompat;
+
 import com.github.chrisbanes.photoview.OnMatrixChangedListener;
 import com.github.chrisbanes.photoview.OnPhotoTapListener;
 import com.github.chrisbanes.photoview.OnSingleFlingListener;
@@ -34,17 +38,13 @@ import com.github.chrisbanes.photoview.PhotoView;
 
 import java.util.Random;
 
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.appcompat.widget.Toolbar;
-import androidx.core.content.ContextCompat;
-
 public class SimpleSampleActivity extends AppCompatActivity {
 
     static final String PHOTO_TAP_TOAST_STRING = "Photo Tap! X: %.2f %% Y:%.2f %% ID: %d";
     static final String SCALE_TOAST_STRING = "Scaled to: %.2ff";
     static final String FLING_LOG_STRING = "Fling velocityX: %.2f, velocityY: %.2f";
 
-    private PhotoView mPhotoView;
+    private PhotoView mPhotoView, mOverlay;
     private TextView mCurrMatrixTv;
 
     private Toast mCurrentToast;
@@ -72,35 +72,43 @@ public class SimpleSampleActivity extends AppCompatActivity {
                 switch (item.getItemId()) {
                     case R.id.menu_zoom_toggle:
                         mPhotoView.setZoomable(!mPhotoView.isZoomable());
+                        mOverlay.setZoomable(!mOverlay.isZoomable());
                         item.setTitle(mPhotoView.isZoomable() ? R.string.menu_zoom_disable : R.string.menu_zoom_enable);
                         return true;
 
                     case R.id.menu_scale_fit_center:
                         mPhotoView.setScaleType(ImageView.ScaleType.CENTER);
+                        mOverlay.setScaleType(ImageView.ScaleType.CENTER);
                         return true;
 
                     case R.id.menu_scale_fit_start:
                         mPhotoView.setScaleType(ImageView.ScaleType.FIT_START);
+                        mOverlay.setScaleType(ImageView.ScaleType.FIT_START);
                         return true;
 
                     case R.id.menu_scale_fit_end:
                         mPhotoView.setScaleType(ImageView.ScaleType.FIT_END);
+                        mOverlay.setScaleType(ImageView.ScaleType.FIT_END);
                         return true;
 
                     case R.id.menu_scale_fit_xy:
                         mPhotoView.setScaleType(ImageView.ScaleType.FIT_XY);
+                        mOverlay.setScaleType(ImageView.ScaleType.FIT_XY);
                         return true;
 
                     case R.id.menu_scale_scale_center:
                         mPhotoView.setScaleType(ImageView.ScaleType.CENTER);
+                        mOverlay.setScaleType(ImageView.ScaleType.CENTER);
                         return true;
 
                     case R.id.menu_scale_scale_center_crop:
                         mPhotoView.setScaleType(ImageView.ScaleType.CENTER_CROP);
+                        mOverlay.setScaleType(ImageView.ScaleType.CENTER_CROP);
                         return true;
 
                     case R.id.menu_scale_scale_center_inside:
                         mPhotoView.setScaleType(ImageView.ScaleType.CENTER_INSIDE);
+                        mOverlay.setScaleType(ImageView.ScaleType.CENTER_INSIDE);
                         return true;
 
                     case R.id.menu_scale_random_animate:
@@ -111,6 +119,7 @@ public class SimpleSampleActivity extends AppCompatActivity {
                         float maxScale = mPhotoView.getMaximumScale();
                         float randomScale = minScale + (r.nextFloat() * (maxScale - minScale));
                         mPhotoView.setScale(randomScale, item.getItemId() == R.id.menu_scale_random_animate);
+                        mOverlay.setScale(randomScale, item.getItemId() == R.id.menu_scale_random_animate);
 
                         showToast(String.format(SCALE_TOAST_STRING, randomScale));
 
@@ -120,25 +129,34 @@ public class SimpleSampleActivity extends AppCompatActivity {
                             showToast("You need to capture display matrix first");
                         else
                             mPhotoView.setDisplayMatrix(mCurrentDisplayMatrix);
+                        mOverlay.setDisplayMatrix(mCurrentDisplayMatrix);
                         return true;
                     case R.id.menu_matrix_capture:
                         mCurrentDisplayMatrix = new Matrix();
                         mPhotoView.getDisplayMatrix(mCurrentDisplayMatrix);
+                        mOverlay.getDisplayMatrix(mCurrentDisplayMatrix);
                         return true;
                 }
                 return false;
             }
         });
         mPhotoView = findViewById(R.id.iv_photo);
+        mOverlay = findViewById(R.id.iv_photo_overlay);
         mCurrMatrixTv = findViewById(R.id.tv_current_matrix);
 
         Drawable bitmap = ContextCompat.getDrawable(this, R.drawable.wallpaper);
         mPhotoView.setImageDrawable(bitmap);
+        Drawable overlay = ContextCompat.getDrawable(this, R.drawable.transparent_foreground);
+        mOverlay.setImageDrawable(overlay);
 
         // Lets attach some listeners, not required though!
         mPhotoView.setOnMatrixChangeListener(new MatrixChangeListener());
         mPhotoView.setOnPhotoTapListener(new PhotoTapListener());
         mPhotoView.setOnSingleFlingListener(new SingleFlingListener());
+        mOverlay.setOnMatrixChangeListener(new MatrixChangeListener());
+        mOverlay.setOnPhotoTapListener(new PhotoTapListener());
+        mOverlay.setOnSingleFlingListener(new SingleFlingListener());
+        mOverlay.bindPhotoView(mPhotoView);
     }
 
     private class PhotoTapListener implements OnPhotoTapListener {

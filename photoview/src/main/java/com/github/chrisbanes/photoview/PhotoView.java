@@ -22,6 +22,9 @@ import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.util.AttributeSet;
 import android.view.GestureDetector;
+import android.view.MotionEvent;
+import android.view.View;
+import android.widget.ImageView;
 
 import androidx.appcompat.widget.AppCompatImageView;
 
@@ -34,6 +37,8 @@ public class PhotoView extends AppCompatImageView {
 
     private PhotoViewAttacher attacher;
     private ScaleType pendingScaleType;
+    private GestureDetector.OnDoubleTapListener onDoubleTapListener;
+    private PhotoView boundView;
 
     public PhotoView(Context context) {
         this(context, null);
@@ -60,6 +65,154 @@ public class PhotoView extends AppCompatImageView {
         }
     }
 
+    private void setAttacher(PhotoViewAttacher attacher) {
+        this.attacher.setBoundListener(attacher.getOnGestureListener());
+
+        final OnClickListener oldListener = this.attacher.getOnClickListener();
+        final OnClickListener boundListener = attacher.getOnClickListener();
+        this.attacher.setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                oldListener.onClick(v);
+                boundListener.onClick(v);
+            }
+        });
+
+        final GestureDetector.OnDoubleTapListener oldOnDoubleTapListener = getOnDoubleTapListener();
+        final GestureDetector.OnDoubleTapListener boundOnDoubleTapListener = getOnDoubleTapListener();
+        this.attacher.setOnDoubleTapListener(new GestureDetector.OnDoubleTapListener() {
+            @Override
+            public boolean onSingleTapConfirmed(MotionEvent e) {
+                if (oldOnDoubleTapListener != null && boundOnDoubleTapListener != null) {
+                    boolean res = oldOnDoubleTapListener.onSingleTapConfirmed(e);
+                    boundOnDoubleTapListener.onSingleTapConfirmed(e);
+                    return res;
+                }
+                return false;
+            }
+
+            @Override
+            public boolean onDoubleTap(MotionEvent e) {
+                if (oldOnDoubleTapListener != null && boundOnDoubleTapListener != null) {
+                    boolean res = oldOnDoubleTapListener.onDoubleTap(e);
+                    boundOnDoubleTapListener.onDoubleTap(e);
+                    return res;
+                }
+                return false;
+            }
+
+            @Override
+            public boolean onDoubleTapEvent(MotionEvent e) {
+                if (oldOnDoubleTapListener != null && boundOnDoubleTapListener != null) {
+                    boolean res = oldOnDoubleTapListener.onDoubleTapEvent(e);
+                    boundOnDoubleTapListener.onDoubleTapEvent(e);
+                    return res;
+                }
+                return false;
+            }
+        });
+
+        final OnLongClickListener oldOnLongClickListener = this.attacher.getOnLongClickListener();
+        final OnLongClickListener boundOnLongClickListener = attacher.getOnLongClickListener();
+        this.attacher.setOnLongClickListener(new OnLongClickListener() {
+            @Override
+            public boolean onLongClick(View v) {
+                if (oldOnLongClickListener != null && boundOnLongClickListener != null) {
+                    boolean res = oldOnLongClickListener.onLongClick(v);
+                    boundOnLongClickListener.onLongClick(v);
+                    return res;
+                }
+                return false;
+            }
+        });
+
+        final OnMatrixChangedListener oldOnMatrixChangedListener = this.attacher.getonMatrixChangeListener();
+        final OnMatrixChangedListener boundOnMatrixChangedListener = attacher.getonMatrixChangeListener();
+        this.attacher.setOnMatrixChangeListener(new OnMatrixChangedListener() {
+            @Override
+            public void onMatrixChanged(RectF rect) {
+                if (oldOnMatrixChangedListener != null && boundOnMatrixChangedListener != null) {
+                    oldOnMatrixChangedListener.onMatrixChanged(rect);
+                    boundOnMatrixChangedListener.onMatrixChanged(rect);
+                }
+            }
+        });
+
+        final OnOutsidePhotoTapListener oldOnOutsidePhotoTapListener = this.attacher.getOutsidePhotoTapListener();
+        final OnOutsidePhotoTapListener boundOnOutsidePhotoTapListener = attacher.getOutsidePhotoTapListener();
+        this.attacher.setOnOutsidePhotoTapListener(new OnOutsidePhotoTapListener() {
+            @Override
+            public void onOutsidePhotoTap(ImageView imageView) {
+                if (oldOnOutsidePhotoTapListener != null && boundOnOutsidePhotoTapListener != null) {
+                    oldOnOutsidePhotoTapListener.onOutsidePhotoTap(imageView);
+                    boundOnOutsidePhotoTapListener.onOutsidePhotoTap(imageView);
+                }
+            }
+        });
+
+        final OnPhotoTapListener oldOnPhotoTapListener = this.attacher.getOnPhotoTapListener();
+        final OnPhotoTapListener boundOnPhotoTapListener = attacher.getOnPhotoTapListener();
+        this.attacher.setOnPhotoTapListener(new OnPhotoTapListener() {
+            @Override
+            public void onPhotoTap(ImageView view, float x, float y) {
+                if (oldOnPhotoTapListener != null && boundOnPhotoTapListener != null) {
+                    oldOnPhotoTapListener.onPhotoTap(view, x, y);
+                    boundOnPhotoTapListener.onPhotoTap(view, x, y);
+                }
+            }
+        });
+
+        final OnScaleChangedListener oldOnScaleChangedListener = this.attacher.getOnScaleChangeListener();
+        final OnScaleChangedListener boundOnScaleChangedListener = attacher.getOnScaleChangeListener();
+        this.attacher.setOnScaleChangeListener(new OnScaleChangedListener() {
+            @Override
+            public void onScaleChange(float scaleFactor, float focusX, float focusY) {
+                if (oldOnScaleChangedListener != null && boundOnScaleChangedListener != null) {
+                    oldOnScaleChangedListener.onScaleChange(scaleFactor, focusX, focusY);
+                    boundOnScaleChangedListener.onScaleChange(scaleFactor, focusX, focusY);
+                }
+            }
+        });
+
+        final OnSingleFlingListener oldOnSingleFlingListener = this.attacher.getOnSingleFlingListener();
+        final OnSingleFlingListener boundOnSingleFlingListener = this.attacher.getOnSingleFlingListener();
+        this.attacher.setOnSingleFlingListener(new OnSingleFlingListener() {
+            @Override
+            public boolean onFling(MotionEvent e1, MotionEvent e2, float velocityX, float velocityY) {
+                if (oldOnSingleFlingListener != null && boundOnSingleFlingListener != null) {
+                    boolean res = oldOnSingleFlingListener.onFling(e1, e2, velocityX, velocityY);
+                    boundOnSingleFlingListener.onFling(e1, e2, velocityX, velocityY);
+                    return res;
+                }
+                return false;
+            }
+        });
+
+        final OnViewDragListener oldOnViewDragListener = this.attacher.getOnViewDragListener();
+        final OnViewDragListener boundOnViewDragListener = this.attacher.getOnViewDragListener();
+        this.attacher.setOnViewDragListener(new OnViewDragListener() {
+            @Override
+            public void onDrag(float dx, float dy) {
+                if (oldOnViewDragListener != null && boundOnViewDragListener != null) {
+                    oldOnViewDragListener.onDrag(dx, dy);
+                    boundOnViewDragListener.onDrag(dx, dy);
+                }
+            }
+        });
+
+        final OnViewTapListener oldOnViewTapListener = this.attacher.getOnViewTapListener();
+        final OnViewTapListener boundOnViewTapListener = this.attacher.getOnViewTapListener();
+        this.attacher.setOnViewTapListener(new OnViewTapListener() {
+            @Override
+            public void onViewTap(View view, float x, float y) {
+                if (oldOnMatrixChangedListener != null && boundOnMatrixChangedListener != null) {
+                    oldOnViewTapListener.onViewTap(view, x, y);
+                    boundOnViewTapListener.onViewTap(view, x, y);
+                }
+            }
+        });
+    }
+
     /**
      * Get the current {@link PhotoViewAttacher} for this view. Be wary of holding on to references
      * to this attacher, as it has a reference to this view, which, if a reference is held in the
@@ -69,6 +222,11 @@ public class PhotoView extends AppCompatImageView {
      */
     public PhotoViewAttacher getAttacher() {
         return attacher;
+    }
+
+    public void bindPhotoView(PhotoView photoView) {
+        boundView = photoView;
+        setAttacher(photoView.getAttacher());
     }
 
     @Override
@@ -158,7 +316,8 @@ public class PhotoView extends AppCompatImageView {
         attacher.getDisplayMatrix(matrix);
     }
 
-    @SuppressWarnings("UnusedReturnValue") public boolean setDisplayMatrix(Matrix finalRectangle) {
+    @SuppressWarnings("UnusedReturnValue")
+    public boolean setDisplayMatrix(Matrix finalRectangle) {
         return attacher.setDisplayMatrix(finalRectangle);
     }
 
@@ -242,8 +401,13 @@ public class PhotoView extends AppCompatImageView {
         attacher.setZoomTransitionDuration(milliseconds);
     }
 
+    public GestureDetector.OnDoubleTapListener getOnDoubleTapListener() {
+        return onDoubleTapListener;
+    }
+
     public void setOnDoubleTapListener(GestureDetector.OnDoubleTapListener onDoubleTapListener) {
         attacher.setOnDoubleTapListener(onDoubleTapListener);
+        this.onDoubleTapListener = onDoubleTapListener;
     }
 
     public void setOnScaleChangeListener(OnScaleChangedListener onScaleChangedListener) {

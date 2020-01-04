@@ -94,10 +94,14 @@ public class PhotoViewAttacher implements View.OnTouchListener,
 
     private boolean mZoomEnabled = true;
     private ScaleType mScaleType = ScaleType.FIT_CENTER;
+    private OnGestureListener boundListener;
 
     private OnGestureListener onGestureListener = new OnGestureListener() {
         @Override
         public void onDrag(float dx, float dy) {
+            if (boundListener != null) {
+                boundListener.onDrag(dx, dy);
+            }
             if (mScaleDragDetector.isScaling()) {
                 return; // Do not drag if we are already scaling
             }
@@ -136,6 +140,9 @@ public class PhotoViewAttacher implements View.OnTouchListener,
 
         @Override
         public void onFling(float startX, float startY, float velocityX, float velocityY) {
+            if (boundListener != null) {
+                boundListener.onFling(startX, startY, velocityX, velocityY);
+            }
             mCurrentFlingRunnable = new FlingRunnable(mImageView.getContext());
             mCurrentFlingRunnable.fling(getImageViewWidth(mImageView),
                 getImageViewHeight(mImageView), (int) velocityX, (int) velocityY);
@@ -144,6 +151,9 @@ public class PhotoViewAttacher implements View.OnTouchListener,
 
         @Override
         public void onScale(float scaleFactor, float focusX, float focusY) {
+            if (boundListener != null) {
+                boundListener.onScale(scaleFactor, focusX, focusY);
+            }
             if (getScale() < mMaxScale || scaleFactor < 1f) {
                 if (mScaleChangeListener != null) {
                     mScaleChangeListener.onScaleChange(scaleFactor, focusX, focusY);
@@ -256,8 +266,20 @@ public class PhotoViewAttacher implements View.OnTouchListener,
         this.mScaleChangeListener = onScaleChangeListener;
     }
 
+    public OnScaleChangedListener getOnScaleChangeListener() {
+        return mScaleChangeListener;
+    }
+
     public void setOnSingleFlingListener(OnSingleFlingListener onSingleFlingListener) {
         this.mSingleFlingListener = onSingleFlingListener;
+    }
+
+    public OnSingleFlingListener getOnSingleFlingListener() {
+        return mSingleFlingListener;
+    }
+
+    public OnGestureListener getOnGestureListener() {
+        return onGestureListener;
     }
 
     @Deprecated
@@ -745,6 +767,10 @@ public class PhotoViewAttacher implements View.OnTouchListener,
             mCurrentFlingRunnable.cancelFling();
             mCurrentFlingRunnable = null;
         }
+    }
+
+    public void setBoundListener(OnGestureListener boundListener) {
+        this.boundListener = boundListener;
     }
 
     private class AnimatedZoomRunnable implements Runnable {
